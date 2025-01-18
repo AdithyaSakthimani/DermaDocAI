@@ -103,5 +103,4 @@ Once all services are running:
 
 ---
 
-Feel free to customize this README further based on your specific project needs!
 
