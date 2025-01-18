@@ -1,24 +1,25 @@
-import React,{useState} from 'react';
+import React,{useState , useEffect} from 'react';
 import NoteContext from './NoteContext';
 
-const NoteState = (props) => {
-    const [userId, setUserId] = useState(()=>{
-        const storedId = JSON.parse(localStorage.getItem("id"));
-        return storedId || '.';
-    });
-    const [mainRes, setMainRes] = useState(()=>{
-        const storedRes =  JSON.parse(localStorage.getItem("res"));
-        const storedId = JSON.parse(localStorage.getItem("id"));
-        if(storedId !== '.'){
-            return storedRes||[]
-        }
-        return [] ;
-    });
-    return (
-        <NoteContext.Provider value={{ userId, setUserId,mainRes,setMainRes }}>
-            {props.children}
-        </NoteContext.Provider>
-    );
-};
+function NoteState(props) {
+  const [globalUsername, setGlobalUsername] = useState(() => {
+    return localStorage.getItem('globalUsername') || ''; // Initialize from localStorage
+});
+useEffect(() => {
+  if (globalUsername) {
+      localStorage.setItem('globalUsername', globalUsername);
+      setLoggedIn(true); // Mark the user as logged in if username exists
+  } else {
+      localStorage.removeItem('globalUsername');
+      setLoggedIn(false); // Mark the user as logged out if username is cleared
+  }
+}, [globalUsername]);
+  const[loggedIn , setLoggedIn] = useState(false);
+  return (
+    <NoteContext.Provider  value={{ globalUsername, setGlobalUsername , loggedIn , setLoggedIn  }}>
+        {props.children}
+      </NoteContext.Provider>
+  )
+}
 
-export default NoteState;
+export default NoteState
