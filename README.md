@@ -48,7 +48,7 @@ cd project-root
 Navigate to the `api` directory and install dependencies:
 ```bash
 cd api
-pip install -r requirements.txt
+pip install requests torch torchvision torchaudio beautifulsoup4 datasets flask flask-cors pillow scikit-learn transformers openai
 ```
 
 #### For Node.js Backend:
