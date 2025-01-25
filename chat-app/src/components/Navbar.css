@@ -16,7 +16,9 @@
   justify-content: space-between;
   align-items: center;
 }
-
+.my-logo:hover{
+  rotate: 90deg;
+}
 .nav-logo {
   font-size: 1.5rem;
   font-weight: bold;

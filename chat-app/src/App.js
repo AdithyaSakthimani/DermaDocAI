@@ -1,7 +1,8 @@
-import React, { useContext, useState, useEffect } from "react";
+import React, { useContext, useState, useEffect, useRef } from "react";
 import NoteContext from "./components/NoteContext";
 import './App.css'; 
 import axios from 'axios';
+import {Mic,X} from 'lucide-react';
 import googlePoint from './components/images/googlePoint.png';
 import imgIcon from './components/images/add_photo_alternate_24dp_666666_FILL0_wght400_GRAD0_opsz24.png';
 function App() {
@@ -12,6 +13,7 @@ function App() {
   const [loading, setLoading] = useState(false);
   const [userLocation, setUserLocation] = useState(null);
   const [filePreview, setFilePreview] = useState(null);
+  const [isRecording , setisRecording] = useState(false) ; 
   useEffect(() => {
     getUserLocation();
   }, []);
@@ -40,7 +42,6 @@ function App() {
   }, [filePreview, mainRes]);
   const saveMessage = async (dataPack) => {
     try {
-        // Convert image file to base64 if it exists
         if (dataPack.imageFile) {
             const base64Image = await convertFileToBase64(dataPack.imageFile);
             dataPack = {
@@ -54,7 +55,6 @@ function App() {
         console.log("Message saved to database:", response.data);
     } catch (error) {
         console.error("Error saving message:", error);
-        // Add more specific error handling
         if (error.response) {
             console.error("Server response error:", error.response.data);
         }
@@ -238,10 +238,7 @@ function App() {
           });
           const result = response.data;
           console.log(`result from backend is ${result}`) ; 
-          console.log('Result from backend:', result); // This will show the object structure
-console.log('Disease:', result.disease);
-console.log('Treatment:', result.treatment);
-console.log('Doctors:', result.doctors);
+          console.log('Result from backend:', result);
           const dataPack = {
             query: query,
             res: result.disease || "Disease might be",
@@ -276,6 +273,39 @@ console.log('Doctors:', result.doctors);
       if (myInput) myInput.disabled = true;
     }
   };
+  let recognition = null;
+
+if ("webkitSpeechRecognition" in window) {
+  recognition = new window.webkitSpeechRecognition();
+  recognition.continuous = true;
+  recognition.interimResults = true;
+  recognition.lang = "en-US";
+} else {
+  console.error("Speech recognition is not supported in this browser.");
+}
+  const toggleRecording = async () => {
+    if (isRecording) {
+      recognition.stop();
+      setisRecording(false);
+    } else {
+      recognition.start() ; 
+      setisRecording(true);
+      } 
+  };
+  useEffect(()=>{
+    if(!recognition)return;
+    recognition.onresult = (event) => {
+      console.log(event.results[0][0].transcript);
+      setQuery(event.results[0][0].transcript)
+    };
+
+    recognition.onerror = (event) => {
+      console.error("Speech recognition error:", event.error);
+    };
+    return () => {
+      recognition.stop(); 
+    };
+  },[recognition])
   return (
     <div className="app-area">
       {mainRes.length === 0 ? (
@@ -297,6 +327,9 @@ console.log('Doctors:', result.doctors);
     onChange={handleFileChange}
     className="upload-input"
   />
+  <div onClick={toggleRecording} className="mic-area">
+   {isRecording ? <X size={20}/> : <Mic size ={20}/>}
+  </div>
   </div>
         <textarea
           className="query-searcher"

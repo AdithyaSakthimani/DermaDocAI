@@ -15,6 +15,7 @@ import openai
 app = Flask(__name__)
 CORS(app)
 
+
 dataset = load_dataset("Mostafijur/Skin_disease_classify_data")
 dataset1 = load_dataset("brucewayne0459/Skin_diseases_and_care")
 device = torch.device('cpu')
@@ -265,6 +266,7 @@ def talk_to_chatBot(query):
         base_url="https://mistral-7b.lepton.run/api/v1/",
         api_key="BTmCPY2Xbr1vZ9jhRAqafqzLLjR3KzTL"
     )
+        
     response = client.chat.completions.create(
         model="mistral-7b",
         messages=[{
